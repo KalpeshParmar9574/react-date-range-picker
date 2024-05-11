@@ -15,5 +15,6 @@ interface DateListOption {
     isVisible: boolean;
     optionKey: number;
     optionLabel: string;
+    selectedDate?: string;
 }
 export type { DateRangePickerProps, DateListOption };
