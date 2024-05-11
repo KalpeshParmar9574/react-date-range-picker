@@ -16,7 +16,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   dateListOptions,
 }) => {
   const [selectedOption, setSelectedOption] = useState<DateListOption>(
-    StaticDateRangeData[0]
+    StaticDateRangeData[selectedOptionIndex || 3]
   );
   const [dates, setDates] = useState({ start: new Date(), end: new Date() });
 
@@ -84,10 +84,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     return `${formatDate(start)} - ${formatDate(end)}`;
   };
   const [isVisible, setIsVisible] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
+
 
   const handleDropdownChange = (value: any) => {
     console.log("e", value);
     setSelectedOption(value);
+    setActiveItem(value)
 
     if (value.optionLabel === "Custom Range") {
     }
@@ -112,10 +115,12 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           <div>
             {isVisible && (
               <ul className="p-0 mt-0 option-list">
-                {StaticDateRangeData.map((item) => (
+                {StaticDateRangeData.map((item, index) => (
                   <li
-                    key={item.optionLabel} // Ensure each item has a unique 'id' property
-                    className="flex justify-content-between white-space-normal cursor-pointer m-0 py-2"
+                  key={index}
+                  // className="flex justify-content-between white-space-normal cursor-pointer m-0 py-2"
+                    className={`flex justify-content-between white-space-normal cursor-pointer m-0 py-2 ${activeItem === item ? 'active' : ''}`}
+
                     onClick={(e) => handleDropdownChange(item)}
                   >
                     {item.optionLabel}

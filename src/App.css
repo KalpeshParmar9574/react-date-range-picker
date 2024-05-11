@@ -37,7 +37,16 @@
   }
 }
 
-.option-list{
+.option-list {
   height: 400px;
   overflow: auto;
+
 }
+
+.option-list li:hover {
+  background-color: #dbe0e4;
+}
+.active{
+   color: #2196f3;
+}
+
