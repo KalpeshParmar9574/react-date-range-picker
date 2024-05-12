@@ -50,13 +50,7 @@ const  StaticDateRangeData: DateListOption[]  = [
         optionKey: 6,
         optionLabel: "Month To Date"
     },
-    {
-        dateDiff: 0,
-        isSelected: false,
-        isVisible: false,
-        optionKey: 7,
-        optionLabel: "Week To Date"
-    },
+ 
     {
         dateDiff: 0,
         isSelected: false,

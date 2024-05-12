@@ -57,14 +57,7 @@ const  StaticDateRangeData: any[]  = [
         optionLabel: "Month To Date",
         selectedDate: ""
     },
-    {
-        dateDiff: 0,
-        isSelected: false,
-        isVisible: false,
-        optionKey: 7,
-        optionLabel: "Week To Date",
-        selectedDate: ""
-    },
+
     {
         dateDiff: 0,
         isSelected: false,

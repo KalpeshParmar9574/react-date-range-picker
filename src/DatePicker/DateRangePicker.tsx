@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { StaticDateRangeData } from '../assets/StaticDateRangeData';
 import { DateRangePickerProps, DateListOption } from '../interface/DatePickerPropsInterface';
-import { addDays, addYears, compareAsc, format, startOfMonth, startOfWeek, startOfYear, sub, subMonths, subYears } from 'date-fns';
+import { addDays, addYears, compareAsc, endOfMonth, format, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, onDateSelectionChanged, dateListOptions, selectedDates, dateFormat, minDate, maxDate, }) => {
-    const defaultMinDate = subYears(Date(), 10)
-    const defaultMaxDate = addYears(Date(), 10)
+    const defaultMinDate = minDate ||  subYears(Date(), 10)
+    const defaultMaxDate = maxDate || addYears(Date(), 10)
+    console.log(defaultMaxDate, 'default')
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
     const [selectedDateRange, setselectedDateRange] = useState(StaticDateRangeData[selectedOptionIndex || 0]);
     const [dates, setDates] = useState<(Date | null)[]>(selectedDates || []);
@@ -19,64 +20,80 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
         if (selectedDateRange.dateDiff) {
             const updatedDates = calculateDates(selectedDateRange.dateDiff, null)
             setDates(updatedDates)  
-            // const formattedDate = `${updatedDates[0]?.getDate()}/${updatedDates[0]?.getMonth() + 1}/${updatedDates[0]?.getFullYear()} - `;
-            // const 
-            //  selectedDateRange.selectedDate = `${updatedDates.toLocaleString()} - ${updatedDates.toLocaleString()}`
              StaticDateRangeData.map((item) => {
                if(item.optionLabel === selectedDateRange.optionLabel){
-                item.selectedDate = `${format(updatedDates[0] || Date(), 'dd/MM/yyyy')} - ${format(updatedDates[1] || Date(), 'dd/MM/yyyy')}`
+                item.selectedDate =  convertDateToString(updatedDates as [Date | null, Date | null])
                }
              })
-             console.log(selectedDateRange.selectedDate, 'sdsd')
-        } else {
+        } else if(selectedDateRange.optionLabel === "Custom Range"){
+                setIsDatePickerVisible(true);
+                    setDates([])
+        }else{
             const updatedDates = calculateDates(null, selectedDateRange.optionLabel)
-            //    console.log(updatedDates, 'dfdf')
             setDates(updatedDates)
             //  selectedDateRange.selectedDate = `${updatedDates.toLocaleString()} - ${updatedDates.toLocaleString()}`
              StaticDateRangeData.map((item) => {
                 if(item.optionLabel === selectedDateRange.optionLabel){
-                    item.selectedDate = `${format(updatedDates[0] || Date(), 'dd/MM/yyyy')} - ${format(updatedDates[1] || Date(), 'dd/MM/yyyy')}`
+                    item.selectedDate = convertDateToString(updatedDates as [Date | null, Date | null])
+                }
+              })
+        }
+    }, [selectedDateRange]);
+    useEffect(() => {
+        if(selectedDateRange.optionLabel === "Custom Range"){
+            console.log(dates, 'selcted dates ')
+          const dateString =  convertDateToString(dates as [Date | null, Date | null])
+          StaticDateRangeData.map((item) => {
+              if(item.optionLabel === "Custom Range"){
+                  console.log(dateString, 'string')
+                  item.selectedDate = dateString;
                 }
               })
         }
         returnValues()
-    }, [selectedDateRange]);
-
+    },[dates])
+    const convertDateToString = (dates: [Date | null, Date| null]) => {
+            const startDate = dates[0]
+            const endDate = dates[1];
+            let dateString: string;
+            if(endDate){
+                 dateString = `${format(startDate || Date(), dateFormat || 'dd/MM/yyyy')} - ${format(endDate || Date(),  dateFormat || 'dd/MM/yyyy')}`
+                 return dateString
+            }else{
+                 dateString = `${format(startDate || Date(),dateFormat ||  'dd/MM/yyyy')}`
+                 return dateString
+            }
+    }
     const calculateDates = (diff: number | null, dateLabel: string | null) => {
         const currDate = new Date();
         if (diff) {
 
             const nextDate = addDays(currDate, diff)
-            // console.log(currDate, nextDate)
             return compareAsc(currDate, nextDate) ? [nextDate, currDate] : [currDate, nextDate];
         } else if (dateLabel) {
-            // console.log(dateLabel)
-            const currDate = new Date();
+            let currDate = new Date();
             let nextDate: Date | null;
             switch (dateLabel) {
                 case "Month To Date":
                     nextDate = startOfMonth(currDate);
-                    // console.log(nextDate, 'nexr ')
-                    break;
-                case "Week To Date":
-                    nextDate = startOfWeek(currDate);
                     break;
                 case "Year To Date":
                     nextDate = startOfYear(currDate);
                     break;
                 case "Last Month":
                     nextDate = startOfMonth(subMonths(currDate, 1));
-                    currDate.setMonth(currDate.getMonth() - 1);
+                    currDate = endOfMonth(subMonths(currDate, 1));
                     break;
                 case "This Month":
                     nextDate = startOfMonth(currDate);
+                    currDate = endOfMonth(currDate);
                     break;
                 case "Today":
                     nextDate = null;
                     break;
                 default:
-                    setIsDatePickerVisible(true)
-                    return dates;
+                    console.error('Invalid option label. Please provide a valid option.');
+                    return [currDate, currDate];
             }
             return nextDate ? compareAsc(currDate, nextDate) ? [nextDate, currDate] : [currDate, nextDate] : [currDate, null];
         } else {
@@ -94,11 +111,9 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
                 }
                 return item; // Return the modified item
             });
-            console.log(StaticDateRangeData)
         }
     }
     const handleUpdateDate = (event: any) => {
-        // console.log(event)
         setDates(event)
     }
     return (
@@ -112,6 +127,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
                 className='mt-2'
                 dateFormat={dateFormat || "dd/mm/yy"}
                 value={dates}
+                minDate={defaultMinDate}
+                maxDate={defaultMaxDate}
                 onChange={(e) => handleUpdateDate(e.value)}
                 selectionMode="range"
                 readOnlyInput
