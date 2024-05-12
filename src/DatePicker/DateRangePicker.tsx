@@ -123,7 +123,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
                      valueTemplate={(option:any) => option.selectedDate}
                      />
            {(selectedDateRange.optionLabel === "Custom Range" && isDatePickerVisible ) && (
-            <Calendar
+                    <Calendar
                 className='mt-2'
                 dateFormat={dateFormat || "dd/mm/yy"}
                 value={dates}
@@ -132,10 +132,11 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
                 onChange={(e) => handleUpdateDate(e.value)}
                 selectionMode="range"
                 readOnlyInput
+                numberOfMonths={2}
                 hideOnRangeSelection
                 inline
             />
-        )}
+                    )}
         </div>
     );
 };
