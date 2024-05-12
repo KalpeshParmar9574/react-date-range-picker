@@ -116,26 +116,43 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ selectedOptionIndex, 
     const handleUpdateDate = (event: any) => {
         setDates(event)
     }
+
+    const handleClear = (event:any) =>{
+        event.stopPropagation();
+        console.log('clear callled', event);
+    }
+    const dropdownValueTemplate = (option:any) => {
+        return (
+            <div className="flex"  style={{ cursor: 'pointer', marginLeft: 'auto' }}>
+               {option.selectedDate}
+                <i className="pi pi-times" onClick={(e) => handleClear(e)} style={{ cursor: 'pointer', marginLeft: 'auto' }}></i>
+            </div>
+        );
+    }
     return (
         <div className='mt-5'>
+
                 <Dropdown value={selectedDateRange} onChange={(e) => handleSelectedDateOption(e.value)} options={StaticDateRangeData} optionLabel="optionLabel"
-                     placeholder="Select a City" className="w-full"
-                     valueTemplate={(option:any) => option.selectedDate}
+                     placeholder="Select a City" className="w-full" 
+                     valueTemplate={dropdownValueTemplate}
                      />
            {(selectedDateRange.optionLabel === "Custom Range" && isDatePickerVisible ) && (
-                    <Calendar
-                className='mt-2'
-                dateFormat={dateFormat || "dd/mm/yy"}
-                value={dates}
-                minDate={defaultMinDate}
-                maxDate={defaultMaxDate}
-                onChange={(e) => handleUpdateDate(e.value)}
-                selectionMode="range"
-                readOnlyInput
-                numberOfMonths={2}
-                hideOnRangeSelection
-                inline
-            />
+            <div>
+
+                <Calendar
+                    className="mt-2"
+                    dateFormat="dd/mm/yy"
+                    value={dates}
+                    onChange={handleUpdateDate}
+                    selectionMode="range"
+                    readOnlyInput
+                    numberOfMonths={2}
+                    minDate={defaultMinDate}
+                    maxDate={defaultMaxDate}
+                    hideOnRangeSelection
+                    inline
+                />
+            </div>
                     )}
         </div>
     );
