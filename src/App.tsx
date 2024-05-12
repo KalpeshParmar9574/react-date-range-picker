@@ -19,7 +19,9 @@ function App() {
   return (
     <>
           <PrimeReactProvider>
+            <div className='mt-5'>
            <DateRangePicker selectedOptionIndex={0} onDateSelectionChanged={ onDateSelectionChanged } dateListOptions={dateListOptionCheck} selectedDates={[]} dateFormat={''} minDate={undefined} maxDate={undefined}  />
+            </div>
           </PrimeReactProvider>
     </>
   );
